@@ -27,17 +27,17 @@ public class manChaMove : MonoBehaviour
     }
     void Update()
     {
-        if (Input.GetButtonDown("Horizontal") || Input.GetButtonDown("Vertical") || isMoving)
+        if ((Input.GetButtonDown("Horizontal") && Mathf.Abs(Input.GetAxisRaw("Vertical")) < 0.1f) ||
+        (Input.GetButtonDown("Vertical") && Mathf.Abs(Input.GetAxisRaw("Horizontal")) < 0.1f) ||
+        isMoving)
         {
             GameManager.Instance.SetManCharacterPosition(rigid.position);
-            manAnimator.SetBool("manDash", true);
             if (!isMoving)
             {
                 MoveDirection.x = Input.GetAxisRaw("Horizontal");
                 MoveDirection.y = Input.GetAxisRaw("Vertical");
                 
                 MoveTarget = new Vector3(rigid.transform.position.x + MoveDirection.x, rigid.transform.position.y + MoveDirection.y, 0);
-
             }
             CanAttack();
             if (CanAttackBool && CanMoveBool)
@@ -63,6 +63,7 @@ public class manChaMove : MonoBehaviour
     private IEnumerator MoveWithCooldown(Vector3 moveTarget)
     {
         isMoving = true;
+            manAnimator.SetTrigger("manDash");
 
         if (rigid.velocity.x > 0.2f)
         {
@@ -89,7 +90,6 @@ public class manChaMove : MonoBehaviour
         }
 
         isMoving = false;
-        manAnimator.SetBool("manDash", false);
         rigid.transform.position = moveTarget;
     }
     private IEnumerator MapChangeBoolChange()
